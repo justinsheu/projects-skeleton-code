@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+from constants import device 
 
 
 def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
@@ -33,22 +34,55 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 
     step = 0
     for epoch in range(epochs):
+        count = 0
+        model.train()
         print(f"Epoch {epoch + 1} of {epochs}")
+
+        total_loss = []
 
         # Loop over each batch in the dataset
         for batch in tqdm(train_loader):
+            count += 1
             # TODO: Backpropagation and gradient descent
+            images, labels = batch
 
+            # Transfer to GPU
+            # Does not work?
+            images = images.to(device)
+            labels = labels.to(device)
+            
+            # print(images.size())
+            
+            outputs = model(images) # forward prop
+
+            loss = loss_fn(outputs.squeeze(), labels) # compute loss           
+            
+            loss.backward()
+
+            total_loss.append(loss)
+
+            optimizer.step()            
+            optimizer.zero_grad()
+
+            
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 0:
+                average_loss = sum(total_loss) / count
                 # TODO:
                 # Compute training loss and accuracy.
                 # Log the results to Tensorboard.
+                model.eval()
+
+                
+
+                
+        
 
                 # TODO:
                 # Compute validation loss and accuracy.
                 # Log the results to Tensorboard.
                 # Don't forget to turn off gradient calculations!
+
                 evaluate(val_loader, model, loss_fn)
 
             step += 1
@@ -74,9 +108,11 @@ def compute_accuracy(outputs, labels):
 
 
 def evaluate(val_loader, model, loss_fn):
-    """
-    Computes the loss and accuracy of a model on the validation dataset.
-
-    TODO!
-    """
-    pass
+    """correct = 0
+    
+    for images, labels in val_loader:
+        batch_images, batch_labels = images.to(device), labels.to(device)
+        outputs = torch.argmax(model(batch_images), dim = 1)
+        correct += (outputs == batch_labels).sum().item()
+    print(f'{100 * correct / len(val_loader)}% accuracy')"""
+        
