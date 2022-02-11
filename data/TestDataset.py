@@ -10,7 +10,7 @@ class TestDataset(torch.utils.data.Dataset):
 
     def __init__(self, transform = None, target_transform = None):
         # Read csv into labels
-        self.labels = pd.read_csv('./cassava-leaf-disease-classification/test.csv')
+        self.labels = pd.read_csv('./data/test.csv')
 
         # Image directory path
         self.img_dir = './cassava-leaf-disease-classification/train_images'
