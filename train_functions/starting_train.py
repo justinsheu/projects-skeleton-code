@@ -35,7 +35,7 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
     step = 0
     for epoch in range(epochs):
         count = 0
-        model.train()
+        model.train() # change to train mode
         print(f"Epoch {epoch + 1} of {epochs}")
 
         total_loss = []
@@ -57,12 +57,12 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 
             loss = loss_fn(outputs.squeeze(), labels) # compute loss           
             
-            loss.backward()
+            loss.backward() # backprop
 
-            total_loss.append(loss)
+            total_loss.append(loss) # append this loss to the loss list
 
-            optimizer.step()            
-            optimizer.zero_grad()
+            optimizer.step() # update the parameters using backprop    
+            optimizer.zero_grad() # clear the gradients of the optimizer
 
             
             # Periodically evaluate our model + log to Tensorboard
