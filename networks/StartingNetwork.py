@@ -17,4 +17,3 @@ class StartingNetwork(torch.nn.Module):
         x = self.fc(x)
         x = self.sigmoid(x)
         return x
-s
