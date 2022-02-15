@@ -16,7 +16,7 @@ class StartingDataset(torch.utils.data.Dataset):
         self.labels = pd.read_csv(os.path.join(self.root_dir, 'data', 'train.csv'))
         
         # Image directory path
-        self.img_dir = os.path.join(self.root_dir, 'cassava-leaf-classification', 'train_images')
+        self.img_dir = os.path.join(self.root_dir, 'cassava-leaf-disease-classification', 'train_images')
 
         self.transform, self.target_transform = transform, target_transform
 

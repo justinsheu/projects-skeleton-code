@@ -5,7 +5,7 @@ import os
 
 class TestDataset(torch.utils.data.Dataset):
     """
-    Dataset that contains 100000 3x224x224 black images (all zeros).
+    Test dataset.
     """
 
     def __init__(self, transform = None, target_transform = None):
