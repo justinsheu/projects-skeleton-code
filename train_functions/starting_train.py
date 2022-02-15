@@ -32,18 +32,13 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
     optimizer = optim.Adam(model.parameters())
     loss_fn = nn.CrossEntropyLoss()
 
-    step = 0
+    step, correct, total_loss = 0, 0, 0
+    count = 0
     for epoch in range(epochs):
-        count = 0
-        model.train() # change to train mode
         print(f"Epoch {epoch + 1} of {epochs}")
-
-        total_loss = []
 
         # Loop over each batch in the dataset
         for batch in tqdm(train_loader):
-            count += 1
-            # TODO: Backpropagation and gradient descent
             images, labels = batch
 
             # Transfer to GPU
@@ -55,18 +50,20 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
             
             outputs = model(images) # forward prop
 
-            loss = loss_fn(outputs.squeeze(), labels) # compute loss           
-            
+            loss = loss_fn(outputs, labels).mean() # compute loss
+
+            total_loss += loss.item()
+            correct += (torch.argmax(outputs, dim = 1) == labels).sum().item()
+            count += len(labels)
+
             loss.backward() # backprop
-
-            total_loss.append(loss) # append this loss to the loss list
-
             optimizer.step() # update the parameters using backprop    
             optimizer.zero_grad() # clear the gradients of the optimizer
 
             
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 0:
+<<<<<<< HEAD
                 average_loss = sum(total_loss) / count
                 # TODO:
                 # Compute training loss and accuracy.
@@ -78,13 +75,14 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 
                 
         
+=======
+                accuracy = correct / count
+                total_loss, correct, count = 0, 0, 0
+>>>>>>> 7eed9842acdd54be9b233319a5abfc59c9e7c0cd
 
-                # TODO:
-                # Compute validation loss and accuracy.
-                # Log the results to Tensorboard.
-                # Don't forget to turn off gradient calculations!
+                eval_loss, eval_accuracy = evaluate(val_loader, model, loss_fn)
 
-                evaluate(val_loader, model, loss_fn)
+                model.train()
 
             step += 1
 
@@ -109,6 +107,7 @@ def compute_accuracy(outputs, labels):
 
 
 def evaluate(val_loader, model, loss_fn):
+<<<<<<< HEAD
     correct = 0
     total = 0
 
@@ -125,3 +124,23 @@ def evaluate(val_loader, model, loss_fn):
 
         print('Accuracy:', (correct / total).item())
             
+=======
+    model.eval() # evaluation mode instead of training
+
+    total_loss, correct, count = 0, 0, 0
+
+    for batch in val_loader:
+        images, labels = batch
+
+        images = images.to(device)
+        labels = labels.to(device)
+
+        output = model(images)
+        total_loss += loss_fn(output, labels).mean().item()
+        correct += (torch.argmax(output, dim = 1) == labels).sum().item()
+        count += len(labels)
+
+    return total_loss, correct / count
+
+        
+>>>>>>> 7eed9842acdd54be9b233319a5abfc59c9e7c0cd
