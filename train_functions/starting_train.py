@@ -73,6 +73,7 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
                 # Log the results to Tensorboard.
                 model.eval()
 
+
                 
 
                 
@@ -108,11 +109,19 @@ def compute_accuracy(outputs, labels):
 
 
 def evaluate(val_loader, model, loss_fn):
-    """correct = 0
-    
-    for images, labels in val_loader:
-        batch_images, batch_labels = images.to(device), labels.to(device)
-        outputs = torch.argmax(model(batch_images), dim = 1)
-        correct += (outputs == batch_labels).sum().item()
-    print(f'{100 * correct / len(val_loader)}% accuracy')"""
-        
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in val_loader:
+            batch_images, batch_labels = images.to(device), labels.to(device)
+
+            outputs = model(batch_images)
+            predictions = torch.argmax((outputs),dim=1)
+
+            correct += (predictions == batch_labels).int().sum()
+
+            total += len(predictions)
+
+        print('Accuracy:', (correct / total).item())
+            
