@@ -46,11 +46,10 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
             images = images.to(device)
             labels = labels.to(device)
             
-            # print(images.size())
             
             outputs = model(images) # forward prop
 
-            loss = loss_fn(outputs, labels).mean() # compute loss
+            loss = loss_fn(outputs, labels) # compute loss
 
             total_loss += loss.item()
             correct += (torch.argmax(outputs, dim = 1) == labels).sum().item()

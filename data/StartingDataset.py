@@ -33,7 +33,7 @@ class StartingDataset(torch.utils.data.Dataset):
 
         input_batch = preprocess(image)
     
-        label = self.labels.iloc[index]['label']
+        label = int(self.labels.iloc[index]['label'])
         
         return input_batch, label
 

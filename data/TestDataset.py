@@ -13,7 +13,7 @@ class TestDataset(torch.utils.data.Dataset):
         self.labels = pd.read_csv('./data/test.csv')
 
         # Image directory path
-        self.img_dir = './cassava-leaf-disease-classification/train_images'
+        self.img_dir = './cassava-leaf-classification/train_images'
 
         self.transform, self.target_transform = transform, target_transform
 

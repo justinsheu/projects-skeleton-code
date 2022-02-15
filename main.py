@@ -18,6 +18,9 @@ def main():
     val_dataset = TestDataset()
     model = StartingNetwork()
 
+    if torch.cuda.is_available():
+        model.cuda()
+
     starting_train(
         train_dataset=train_dataset,
         val_dataset=val_dataset,
@@ -25,9 +28,6 @@ def main():
         hyperparameters=hyperparameters,
         n_eval=constants.N_EVAL,
     )
-
-    
-
 
 if __name__ == "__main__":
     main()
