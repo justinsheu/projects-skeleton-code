@@ -63,7 +63,6 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
             
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 0:
-<<<<<<< HEAD
                 average_loss = sum(total_loss) / count
                 # TODO:
                 # Compute training loss and accuracy.
@@ -75,10 +74,7 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 
                 
         
-=======
-                accuracy = correct / count
-                total_loss, correct, count = 0, 0, 0
->>>>>>> 7eed9842acdd54be9b233319a5abfc59c9e7c0cd
+
 
                 eval_loss, eval_accuracy = evaluate(val_loader, model, loss_fn)
 
@@ -107,7 +103,6 @@ def compute_accuracy(outputs, labels):
 
 
 def evaluate(val_loader, model, loss_fn):
-<<<<<<< HEAD
     correct = 0
     total = 0
 
@@ -124,23 +119,6 @@ def evaluate(val_loader, model, loss_fn):
 
         print('Accuracy:', (correct / total).item())
             
-=======
-    model.eval() # evaluation mode instead of training
 
-    total_loss, correct, count = 0, 0, 0
 
-    for batch in val_loader:
-        images, labels = batch
 
-        images = images.to(device)
-        labels = labels.to(device)
-
-        output = model(images)
-        total_loss += loss_fn(output, labels).mean().item()
-        correct += (torch.argmax(output, dim = 1) == labels).sum().item()
-        count += len(labels)
-
-    return total_loss, correct / count
-
-        
->>>>>>> 7eed9842acdd54be9b233319a5abfc59c9e7c0cd
