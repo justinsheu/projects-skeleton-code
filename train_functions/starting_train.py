@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from constants import device 
+from constants import SAVE_FILE, device 
 
 
 def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
@@ -61,27 +61,26 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
 
             
             # Periodically evaluate our model + log to Tensorboard
-            if step % n_eval == 0:
-                average_loss = sum(total_loss) / count
+            if step % n_eval == 0 and step != 0:
+                average_loss = total_loss / count
+                print('average loss:', average_loss)
                 # TODO:
                 # Compute training loss and accuracy.
                 # Log the results to Tensorboard.
+                # Log the results to Tensorboard.
                 model.eval()
 
-
-                
-
-                
-        
-
-
                 eval_loss, eval_accuracy = evaluate(val_loader, model, loss_fn)
+                print('evaluation loss:', eval_loss)
+                print('evaluation accuracy:', eval_accuracy)
 
                 model.train()
 
             step += 1
 
         print()
+
+    torch.save(model.state_dict(), SAVE_FILE)
 
 
 def compute_accuracy(outputs, labels):
@@ -105,6 +104,7 @@ def evaluate(val_loader, model, loss_fn):
     correct = 0
     total = 0
 
+    print('evaluating...')
     with torch.no_grad():
         for images, labels in val_loader:
             batch_images, batch_labels = images.to(device), labels.to(device)
