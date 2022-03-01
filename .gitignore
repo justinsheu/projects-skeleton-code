@@ -3,10 +3,16 @@ __pycache__
 
 training_summaries
 
-cassava-leaf-disease-classification/
+cassava-leaf-classification/
 train_images/
 test_images/
 train_tfrecords/
 test_tfrecords/
 .idea/
 *.zip
+*.pyc
+*.txt
+.idea/
+finished_model/
+*.log
+!requirements.txt

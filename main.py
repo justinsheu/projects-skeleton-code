@@ -1,21 +1,23 @@
 import os
 import torch
 import constants
-from data.StartingDataset import StartingDataset
-from data.TestDataset import TestDataset
-from networks.StartingNetwork import StartingNetwork
-from train_functions.starting_train import starting_train
+import logging
+from data.Datasets import Dataset
+from networks.Network import StartingNetwork
+from train_functions.train import starting_train
 
 def main():
-    # Get command line arguments
     hyperparameters = {"epochs": constants.EPOCHS, "batch_size": constants.BATCH_SIZE}
 
     print("Epochs:", constants.EPOCHS)
     print("Batch size:", constants.BATCH_SIZE)
 
+    logging.basicConfig(filename = constants.LOG_FILE, level = logging.DEBUG, filemode = 'w')
+
     # Initalize dataset and model. Then train the model!
-    train_dataset = StartingDataset()
-    val_dataset = TestDataset()
+    csv_root = os.path.join(os.getcwd(), 'data', 'csv')
+    train_dataset = Dataset(os.path.join(csv_root, 'train.csv'))
+    val_dataset = Dataset(os.path.join(csv_root, 'test.csv'))
     model = StartingNetwork()
 
     if torch.cuda.is_available():
