@@ -9,7 +9,7 @@ class StartingDataset(torch.utils.data.Dataset):
 
     # spits out image tensors which resnet18 should like
 
-    def __init__(self, transform = None, target_transform = None):
+    def __init__(self):
         self.root_dir = Path.cwd()
 
         # Read csv into labels
@@ -17,8 +17,6 @@ class StartingDataset(torch.utils.data.Dataset):
         
         # Image directory path
         self.img_dir = os.path.join(self.root_dir, 'cassava-leaf-classification', 'train_images')
-
-        self.transform, self.target_transform = transform, target_transform
 
     def __getitem__(self, index):
         # Read the image into a tensor dim 224 x 224 x 3

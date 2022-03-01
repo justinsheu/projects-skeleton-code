@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 from constants import SAVE_FILE, device 
+from networks.StartingNetwork import StartingNetwork
 
 
-def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
+def starting_train(train_dataset, val_dataset, model: StartingNetwork, hyperparameters, n_eval):
     """
     Trains and evaluates a model.
 
@@ -28,6 +29,9 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
         val_dataset, batch_size=batch_size, shuffle=True
     )
 
+    model.to(device)
+    model.resnet.to(device)
+
     # Initalize optimizer (for gradient descent) and loss function
     optimizer = optim.Adam(model.parameters())
     loss_fn = nn.CrossEntropyLoss()
@@ -49,11 +53,20 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
             
             outputs = model(images) # forward prop
 
-            loss = loss_fn(outputs, labels) # compute loss
+            loss = loss_fn(outputs, labels).mean() # compute loss
 
             total_loss += loss.item()
+
+            # the wrong predictions
+            for i, correctness in enumerate((torch.argmax(outputs, dim = 1) == labels)):
+                if not correctness:
+                    print(f'({torch.argmax(outputs, dim = 1)[i].item()}|{labels[i].item()})', end = ' ')
+            print()
+
             correct += (torch.argmax(outputs, dim = 1) == labels).sum().item()
             count += len(labels)
+
+            print(f'training accuracy: {correct / count * 100}%')
 
             loss.backward() # backprop
             optimizer.step() # update the parameters using backprop    
@@ -63,16 +76,13 @@ def starting_train(train_dataset, val_dataset, model, hyperparameters, n_eval):
             # Periodically evaluate our model + log to Tensorboard
             if step % n_eval == 0 and step != 0:
                 average_loss = total_loss / count
-                print('average loss:', average_loss)
                 # TODO:
                 # Compute training loss and accuracy.
                 # Log the results to Tensorboard.
                 # Log the results to Tensorboard.
                 model.eval()
 
-                eval_loss, eval_accuracy = evaluate(val_loader, model, loss_fn)
-                print('evaluation loss:', eval_loss)
-                print('evaluation accuracy:', eval_accuracy)
+                evaluate(val_loader, model, loss_fn)
 
                 model.train()
 
@@ -103,21 +113,19 @@ def compute_accuracy(outputs, labels):
 def evaluate(val_loader, model, loss_fn):
     correct = 0
     total = 0
-
+    total_loss = 0
     print('evaluating...')
     with torch.no_grad():
         for images, labels in val_loader:
             batch_images, batch_labels = images.to(device), labels.to(device)
 
             outputs = model(batch_images)
-            predictions = torch.argmax((outputs),dim=1)
+            total_loss += loss_fn(outputs, batch_labels).mean().item()
+            predictions = torch.argmax(outputs, dim = 1)
 
-            correct += (predictions == batch_labels).int().sum()
+            correct += (predictions == batch_labels).sum().item()
 
             total += len(predictions)
 
-        print('Accuracy:', (correct / total).item())
-            
-
-
-
+        print('Total loss:', total_loss)
+        print(f'Accuracy: {correct / total * 100}%')

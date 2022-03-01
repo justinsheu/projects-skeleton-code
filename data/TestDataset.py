@@ -1,35 +1,35 @@
 import torch
-import torchvision
+from torchvision import transforms
 import pandas as pd
 import os
+from PIL import Image
 
 class TestDataset(torch.utils.data.Dataset):
     """
     Test dataset.
     """
 
-    def __init__(self, transform = None, target_transform = None):
+    def __init__(self):
         # Read csv into labels
         self.labels = pd.read_csv('./data/test.csv')
 
         # Image directory path
         self.img_dir = './cassava-leaf-classification/train_images'
 
-        self.transform, self.target_transform = transform, target_transform
-
     def __getitem__(self, index):
         # Read the image into a tensor
-        image = torchvision.io.read_image(os.path.join(self.img_dir, self.labels.iloc[index]['image_id'])).float()
+        image = Image.open(os.path.join(self.img_dir, self.labels.iloc[index]['image_id']))
         
+        preprocess = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        ])
     
-        # Do the transforms if they exist
-        if self.transform is not None:
-            image = self.transform(image)
         label = self.labels.iloc[index]['label']
-        if self.target_transform is not None:
-            label = self.transform(label)
         
-        return image, label
+        return preprocess(image), label
 
     def __len__(self):
         return len(self.labels)
