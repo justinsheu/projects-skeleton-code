@@ -78,7 +78,6 @@ def starting_train(train_dataset, val_dataset, model: StartingNetwork, hyperpara
 
             step += 1
 
-        logging.info()
 
     torch.save(model.state_dict(), SAVE_FILE)
 
